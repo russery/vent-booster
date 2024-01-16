@@ -1,0 +1,89 @@
+<mxfile host="app.diagrams.net" modified="2024-01-16T02:38:49.005Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" etag="BMLaiqOq1KsLR_zI4j-e" version="22.1.18" type="device">
+  <diagram name="Page-1" id="GAj-2VuwrUqju5bssF9E">
+    <mxGraphModel dx="1430" dy="786" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="HV8AlajikwhqISP_ut1v-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="HV8AlajikwhqISP_ut1v-1" target="HV8AlajikwhqISP_ut1v-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="HV8AlajikwhqISP_ut1v-1" target="HV8AlajikwhqISP_ut1v-18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-1" value="110VAC to 12VDC Power Supply" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="305" y="100" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-3" value="12V to 5V DC/DC Converter" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="305" y="230" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="HV8AlajikwhqISP_ut1v-3" target="HV8AlajikwhqISP_ut1v-8">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="763.9300000000003" y="302.98707999999965" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-7" value="SAMD21 QT Py Arduino" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="240" width="180" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-8" value="5V" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="250" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="HV8AlajikwhqISP_ut1v-9" target="HV8AlajikwhqISP_ut1v-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-9" value="Ambient Thermistor" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="170" y="290" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="HV8AlajikwhqISP_ut1v-10" target="HV8AlajikwhqISP_ut1v-13">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="270" y="355" />
+              <mxPoint x="270" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-10" value="Vent Thermistor" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="170" y="335" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="HV8AlajikwhqISP_ut1v-11" target="HV8AlajikwhqISP_ut1v-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-11" value="Setpoint Potentiometer" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="380" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-12" value="A0" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="300" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-13" value="A1" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="320" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-14" value="A2" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="340" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="HV8AlajikwhqISP_ut1v-18" target="HV8AlajikwhqISP_ut1v-22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-18" value="Fan control FET" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="240" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="HV8AlajikwhqISP_ut1v-19" target="HV8AlajikwhqISP_ut1v-18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-19" value="D10" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="250" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-22" value="Fans" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="850" y="300" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-24" value="OLED Display" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="360" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="HV8AlajikwhqISP_ut1v-25" target="HV8AlajikwhqISP_ut1v-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HV8AlajikwhqISP_ut1v-25" value="I2C" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="380" width="40" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
