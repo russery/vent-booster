@@ -21,14 +21,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "display.h"
 #include <math.h>
 
-
 #define DEBUG
 
 // Setpoints and control constants:
 constexpr float HVAC_ON_DELTA_C = 6.0f;
 constexpr float HVAC_ON_HYSTERESIS_C = 2.0f;
 constexpr float SETPOINT_HYSTERESIS_C = 0.5f;
-constexpr float SETPOINT_CONST = 50.0f; // Arbitrary to scale setpoint pot position to degC
+constexpr float SETPOINT_CONST =
+    50.0f; // Arbitrary to scale setpoint pot position to degC
 
 constexpr float PWM_FREQ_HZ = 30.0f;
 constexpr float DUTY_CYCLE_PERCENT_MAX = 100.0f;
@@ -46,35 +46,40 @@ constexpr float R_INFINITY_OHMS = 10000.0f * exp(-THERMISTOR_BETA / 298.15);
 
 Display display(&Wire);
 
-float adc_counts_to_volts(int adc_counts){
+float adc_counts_to_volts(int adc_counts) {
   return 3.30f * adc_counts / 1024.0f;
 }
 
-void read_thermistor(uint pin, float *temp_out_degC){
+void read_thermistor(uint pin, float *temp_out_degC) {
   float volts = adc_counts_to_volts(analogRead(pin));
   float ohms = (VBIAS_V * RBIAS_OHMS / volts) - RBIAS_OHMS;
   float temp_degC = THERMISTOR_BETA / log(ohms / R_INFINITY_OHMS) - 272.15f;
 
-  if(*temp_out_degC == UNINIT_TEMP){
+  if (*temp_out_degC == UNINIT_TEMP) {
     // Uninitialized, just set the output to current value
     *temp_out_degC = temp_degC;
   } else {
     // Already initialized, start averaging
-    *temp_out_degC = (*temp_out_degC * (TEMP_AVG_CYCLES-1) + temp_degC) / TEMP_AVG_CYCLES;
+    *temp_out_degC =
+        (*temp_out_degC * (TEMP_AVG_CYCLES - 1) + temp_degC) / TEMP_AVG_CYCLES;
   }
 }
 
-void read_setpoint_pot(float *temp_setpoint_degC){
-  float setpoint = adc_counts_to_volts(analogRead(BSP::SETPOINT_PIN)) * SETPOINT_CONST;
-  if(*temp_setpoint_degC == UNINIT_TEMP){
+void read_setpoint_pot(float *temp_setpoint_degC) {
+  float setpoint =
+      adc_counts_to_volts(analogRead(BSP::SETPOINT_PIN)) * SETPOINT_CONST;
+  if (*temp_setpoint_degC == UNINIT_TEMP) {
     // Uninitialized, just set the output to current value
     *temp_setpoint_degC = setpoint;
   } else {
     // Already initialized, start averaging
-    *temp_setpoint_degC = (*temp_setpoint_degC * (SETPOINT_AVG_CYCLES-1) + setpoint) / SETPOINT_AVG_CYCLES;
+    *temp_setpoint_degC =
+        (*temp_setpoint_degC * (SETPOINT_AVG_CYCLES - 1) + setpoint) /
+        SETPOINT_AVG_CYCLES;
   }
 }
 
+// cppcheck-suppress unusedFunction
 void setup() {
 #ifdef DEBUG
   Serial.begin(2e6);
@@ -87,15 +92,15 @@ void setup() {
   Wire.begin(BSP::I2C_SDA_PIN, BSP::I2C_SCL_PIN);
   display.Start();
   display.Update(0, 100, -40, "HEAT");
-
 }
 
+// cppcheck-suppress unusedFunction
 void loop() {
-  enum STATE {OFF, TURNON, ON, TURNOFF};
+  enum STATE { OFF, TURNON, ON, TURNOFF };
   constexpr char MODE_STR_OFF[8] = "OFF";
   constexpr char MODE_STR_HEAT[8] = "HEAT";
   constexpr char MODE_STR_COOL[8] = "COOL";
-  static const char* curr_mode_str = MODE_STR_OFF;
+  static const char *curr_mode_str = MODE_STR_OFF;
   static float ambient_degC = UNINIT_TEMP;
   static float vent_degC = UNINIT_TEMP;
   static float setpoint_degC = UNINIT_TEMP;
@@ -106,55 +111,54 @@ void loop() {
   read_thermistor(BSP::VENT_TEMP_PIN, &vent_degC);
   read_setpoint_pot(&setpoint_degC);
 
-  switch(state)
-  {
-    case OFF:
-      if (// Heating
+  switch (state) {
+  case OFF:
+    if ( // Heating
         (vent_degC - ambient_degC >= HVAC_ON_DELTA_C) &&
-        (ambient_degC < setpoint_degC)){
-        curr_mode_str = MODE_STR_HEAT;
-        state = TURNON;
-        duty_percent = DUTY_CYCLE_PERCENT_MIN;
-      }
-      if (// Cooling
+        (ambient_degC < setpoint_degC)) {
+      curr_mode_str = MODE_STR_HEAT;
+      state = TURNON;
+      duty_percent = DUTY_CYCLE_PERCENT_MIN;
+    }
+    if ( // Cooling
         (ambient_degC - vent_degC >= HVAC_ON_DELTA_C) &&
-        (ambient_degC > setpoint_degC)
-        ){
-        curr_mode_str = MODE_STR_COOL;
-        state = TURNON;
-        duty_percent = DUTY_CYCLE_PERCENT_MIN;
-      }
-      break;
-    case TURNON:
-      duty_percent += DUTY_CYCLE_STEP;
-      if (duty_percent >= DUTY_CYCLE_PERCENT_MAX) {
-        duty_percent = DUTY_CYCLE_PERCENT_MAX;
-        state = ON;
-      }
-      break;
-    case ON:
-      if (
-        (// HVAC not running
-        abs(vent_degC - ambient_degC) <= HVAC_ON_DELTA_C - HVAC_ON_HYSTERESIS_C) ||
-        (// Heat running, but over setpoint temp:
-        (vent_degC - ambient_degC >= HVAC_ON_DELTA_C) &&  (ambient_degC > setpoint_degC + SETPOINT_HYSTERESIS_C)) ||
-        (// Cooling running, but under setpoint temp:
-        (ambient_degC - vent_degC >= HVAC_ON_DELTA_C) && (ambient_degC < setpoint_degC - SETPOINT_HYSTERESIS_C))
-        ){
-        state = TURNOFF;
-      }
-      break;
-    case TURNOFF:
-      duty_percent -= DUTY_CYCLE_STEP;
-      if(duty_percent <= DUTY_CYCLE_PERCENT_MIN) {
-        duty_percent = 0.0f; // Set to zero to ensure it's off
-        curr_mode_str = MODE_STR_OFF;
-        state = OFF;
-      }
-      break;
+        (ambient_degC > setpoint_degC)) {
+      curr_mode_str = MODE_STR_COOL;
+      state = TURNON;
+      duty_percent = DUTY_CYCLE_PERCENT_MIN;
+    }
+    break;
+  case TURNON:
+    duty_percent += DUTY_CYCLE_STEP;
+    if (duty_percent >= DUTY_CYCLE_PERCENT_MAX) {
+      duty_percent = DUTY_CYCLE_PERCENT_MAX;
+      state = ON;
+    }
+    break;
+  case ON:
+    if (( // HVAC not running
+            abs(vent_degC - ambient_degC) <=
+            HVAC_ON_DELTA_C - HVAC_ON_HYSTERESIS_C) ||
+        ( // Heat running, but over setpoint temp:
+            (vent_degC - ambient_degC >= HVAC_ON_DELTA_C) &&
+            (ambient_degC > setpoint_degC + SETPOINT_HYSTERESIS_C)) ||
+        ( // Cooling running, but under setpoint temp:
+            (ambient_degC - vent_degC >= HVAC_ON_DELTA_C) &&
+            (ambient_degC < setpoint_degC - SETPOINT_HYSTERESIS_C))) {
+      state = TURNOFF;
+    }
+    break;
+  case TURNOFF:
+    duty_percent -= DUTY_CYCLE_STEP;
+    if (duty_percent <= DUTY_CYCLE_PERCENT_MIN) {
+      duty_percent = 0.0f; // Set to zero to ensure it's off
+      curr_mode_str = MODE_STR_OFF;
+      state = OFF;
+    }
+    break;
   }
 
-  analogWrite(BSP::PWM_PIN, (int)(duty_percent/100 * 255));
+  analogWrite(BSP::PWM_PIN, (int)(duty_percent / 100 * 255));
 
   display.Update(setpoint_degC, ambient_degC, vent_degC, curr_mode_str);
 
@@ -172,4 +176,3 @@ void loop() {
   Serial.println("");
 #endif
 }
-

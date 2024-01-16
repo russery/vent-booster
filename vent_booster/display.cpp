@@ -40,39 +40,34 @@ void Display::Start(void) {
   display_.display();
 }
 
-float c_to_f(float temp_C){
-  return temp_C * 9 / 5 + 32;
-}
+float c_to_f(float temp_C) { return temp_C * 9 / 5 + 32; }
 
-uint get_whole(float num){
-  return (uint)num;
-}
+uint get_whole(float num) { return (uint)num; }
 
-uint get_mantissa(float num){
-  return (uint)((num - get_whole(num)) * 10);
-}
+uint get_mantissa(float num) { return (uint)((num - get_whole(num)) * 10); }
 
-void Display::Update(const float setpoint_C, const float ambient_C, const float vent_C, const char* mode){
+void Display::Update(const float setpoint_C, const float ambient_C,
+                     const float vent_C, const char *mode) {
   char buff[32] = {0};
   display_.setTextSize(1, 2);
   display_.clearDisplay();
 
   // First column:
-  display_.setCursor(0,0);
+  display_.setCursor(0, 0);
   float val = c_to_f(setpoint_C);
   sprintf(buff, "Set:%d.%dF", get_whole(val), get_mantissa(val));
   display_.write(buff);
-  display_.setCursor(0,18);
+  display_.setCursor(0, 18);
   val = c_to_f(ambient_C);
   sprintf(buff, "Amb:%d.%dF", get_whole(val), get_mantissa(val));
   display_.write(buff);
 
   // Second column:
-  display_.setCursor(64,0);
+  display_.setCursor(64, 0);
   val = c_to_f(vent_C);
   sprintf(buff, "Vent:%d.%dF", get_whole(val), get_mantissa(val));
   display_.write(buff);
-  display_.setCursor(64,18);
+  display_.setCursor(64, 18);
   sprintf(buff, "Mode:%s", mode);
   display_.write(buff);
 

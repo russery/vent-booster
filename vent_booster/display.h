@@ -20,7 +20,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
 
-// cppcheck-suppress noConstructor
 class Display {
 private:
   TwoWire *wire_;
@@ -39,5 +38,6 @@ public:
     display_ = Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, wire_, OLED_RESET);
   };
   void Start(void);
-  void Update(const float setpoint_C, const float ambient_C, const float vent_C, const char* mode);
+  void Update(const float setpoint_C, const float ambient_C, const float vent_C,
+              const char *mode);
 };
