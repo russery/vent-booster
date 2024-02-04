@@ -21,23 +21,23 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "display.h"
 #include <math.h>
 
-#define DEBUG
-
 // Setpoints and control constants:
-constexpr float HVAC_ON_DELTA_C = 6.0f;
-constexpr float HVAC_ON_HYSTERESIS_C = 2.0f;
+constexpr float HVAC_ON_DELTA_C = 20.0f;
+constexpr float HVAC_ON_HYSTERESIS_C = 5.0f;
 constexpr float SETPOINT_HYSTERESIS_C = 0.5f;
 constexpr float SETPOINT_CONST =
     50.0f; // Arbitrary to scale setpoint pot position to degC
 
 constexpr float PWM_FREQ_HZ = 30.0f;
 constexpr float DUTY_CYCLE_PERCENT_MAX = 100.0f;
-constexpr float DUTY_CYCLE_PERCENT_MIN = 40.0f;
-constexpr float DUTY_CYCLE_STEP = 1.0f;
+constexpr float DUTY_CYCLE_PERCENT_MIN = 97.0f;
+constexpr float DUTY_CYCLE_STEP = 0.005f;
+
+constexpr unsigned long LOCKOUT_DURATION_MS = 5 * 60 * 1000;
 
 // Temp measurement constants
 constexpr float UNINIT_TEMP = -1000.0f;
-constexpr uint32_t TEMP_AVG_CYCLES = 500;
+constexpr uint32_t TEMP_AVG_CYCLES = 100;
 constexpr uint32_t SETPOINT_AVG_CYCLES = 50;
 constexpr float RBIAS_OHMS = 4700.0f;
 constexpr float VBIAS_V = 3.3f;
@@ -81,31 +81,27 @@ void read_setpoint_pot(float *temp_setpoint_degC) {
 
 // cppcheck-suppress unusedFunction
 void setup() {
-#ifdef DEBUG
-  Serial.begin(2e6);
-  Serial.println("Vent Controller");
-#endif
-
   analogReadResolution(10);
   pinMode(BSP::PWM_PIN, OUTPUT);
 
   Wire.begin(BSP::I2C_SDA_PIN, BSP::I2C_SCL_PIN);
   display.Start();
-  display.Update(0, 100, -40, "HEAT");
 }
 
 // cppcheck-suppress unusedFunction
 void loop() {
-  enum STATE { OFF, TURNON, ON, TURNOFF };
+  enum STATE { OFF, TURNON, ON, TURNOFF, LOCKOUT};
   constexpr char MODE_STR_OFF[8] = "OFF";
   constexpr char MODE_STR_HEAT[8] = "HEAT";
   constexpr char MODE_STR_COOL[8] = "COOL";
+  constexpr char MODE_STR_LOCK[8] = "LOCK";
   static const char *curr_mode_str = MODE_STR_OFF;
   static float ambient_degC = UNINIT_TEMP;
   static float vent_degC = UNINIT_TEMP;
   static float setpoint_degC = UNINIT_TEMP;
   static STATE state = OFF;
   static float duty_percent = 0.0f;
+  static unsigned long lockout_start_ms;
 
   read_thermistor(BSP::AMBIENT_TEMP_PIN, &ambient_degC);
   read_thermistor(BSP::VENT_TEMP_PIN, &vent_degC);
@@ -152,6 +148,13 @@ void loop() {
     duty_percent -= DUTY_CYCLE_STEP;
     if (duty_percent <= DUTY_CYCLE_PERCENT_MIN) {
       duty_percent = 0.0f; // Set to zero to ensure it's off
+      curr_mode_str = MODE_STR_LOCK;
+      state = LOCKOUT;
+      lockout_start_ms = millis();
+    }
+    break;
+  case LOCKOUT:
+    if (abs((long long)millis() - (long long)lockout_start_ms)> LOCKOUT_DURATION_MS){
       curr_mode_str = MODE_STR_OFF;
       state = OFF;
     }
@@ -161,18 +164,4 @@ void loop() {
   analogWrite(BSP::PWM_PIN, (int)(duty_percent / 100 * 255));
 
   display.Update(setpoint_degC, ambient_degC, vent_degC, curr_mode_str);
-
-#ifdef DEBUG
-  Serial.print("Ambient = ");
-  Serial.print(ambient_degC);
-  Serial.print("C, Vent = ");
-  Serial.print(vent_degC);
-  Serial.print("C, duty = ");
-  Serial.print(duty_percent);
-  Serial.print("%, State: ");
-  Serial.print(state);
-  Serial.print(", Modestr: ");
-  Serial.print(curr_mode_str);
-  Serial.println("");
-#endif
 }
